@@ -1,0 +1,9 @@
+*.jsx
+*.ts
+
+/build
+/.idea
+/.dart_tool
+
+pubspec.lock
+.flutter-plugins-dependencies
