@@ -14,12 +14,10 @@ class ChatWidget extends ConsumerStatefulWidget {
 }
 
 class _ChatWidgetState extends ConsumerState<ChatWidget> {
-  final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
   @override
   void dispose() {
-    _controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -61,17 +59,19 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
     _scrollToBottom();
 
     return Container(
-      width: 360,
-      height: 480,
+      width: MediaQuery.of(context).size.width * 0.9 > 360
+          ? 360
+          : MediaQuery.of(context).size.width * 0.9,
+      height: 500,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 32,
-            offset: const Offset(0, 16),
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 40,
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -85,6 +85,13 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.themeConfig.primaryColor.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Row(
               children: [
@@ -92,7 +99,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(24),
+                    shape: BoxShape.circle,
                   ),
                   child: const Icon(Icons.chat, color: Colors.white, size: 18),
                 ),
@@ -120,7 +127,7 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.close, color: Colors.white),
+                  icon: const Icon(Icons.close, color: Colors.white, size: 18),
                   onPressed: () => ref.read(chatProvider.notifier).closeChat(),
                 ),
               ],
@@ -130,16 +137,26 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
             child: Container(
               color: Colors.grey.shade50,
               padding: const EdgeInsets.all(16),
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: chatState.messages.length + (chatState.isTyping ? 1 : 0),
-                itemBuilder: (context, index) {
-                  if (index == chatState.messages.length && chatState.isTyping) {
-                    return _buildTypingIndicator();
-                  }
-                  final message = chatState.messages[index];
-                  return _buildMessage(message);
-                },
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                      controller: _scrollController,
+                      itemCount:
+                          chatState.messages.length +
+                          (chatState.isTyping ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == chatState.messages.length &&
+                            chatState.isTyping) {
+                          return _buildTypingIndicator();
+                        }
+                        final message = chatState.messages[index];
+                        return _buildMessage(message);
+                      },
+                    ),
+                  ),
+                  if (!chatState.isTyping) _buildOptions(),
+                ],
               ),
             ),
           ),
@@ -149,42 +166,99 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
               color: Colors.white,
               border: Border(top: BorderSide(color: Colors.grey.shade100)),
             ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: InputDecoration(
-                      hintText: 'Mensagem...',
-                      filled: true,
-                      fillColor: Colors.grey.shade100,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                        borderSide: BorderSide.none,
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  decoration: BoxDecoration(
-                    color: widget.themeConfig.primaryColor,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.send, color: Colors.white, size: 20),
-                    onPressed: _sendMessage,
-                  ),
-                ),
-              ],
+            child: Text(
+              'Selecione uma opção acima para continuar',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildOptions() {
+    final chatNotifier = ref.read(chatProvider.notifier);
+    final currentStep = chatNotifier.getCurrentStep();
+
+    if (currentStep == null || currentStep.options.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+      builder: (context, value, child) {
+        return Transform.translate(
+          offset: Offset(0, 10 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.only(top: 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: currentStep.options.asMap().entries.map((entry) {
+            final index = entry.key;
+            final option = entry.value;
+
+            return TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: Duration(milliseconds: 300 + (index * 100)),
+              curve: Curves.easeOut,
+              builder: (context, value, child) {
+                return Transform.translate(
+                  offset: Offset(0, 5 * (1 - value)),
+                  child: Opacity(opacity: value, child: child),
+                );
+              },
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Material(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  child: InkWell(
+                    onTap: () {
+                      ref.read(chatProvider.notifier).selectOption(option);
+                      _scrollToBottom();
+                    },
+                    borderRadius: BorderRadius.circular(24),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade100),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              option.label,
+                              style: TextStyle(
+                                color: widget.themeConfig.textColor,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 16,
+                            color: Colors.grey.shade300,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
@@ -195,25 +269,22 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        mainAxisAlignment:
-            isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isUser
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           Container(
             constraints: const BoxConstraints(maxWidth: 260),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isUser
-                  ? widget.themeConfig.primaryColor
-                  : Colors.white,
+              color: isUser ? widget.themeConfig.primaryColor : Colors.white,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(16),
                 topRight: const Radius.circular(16),
-                bottomLeft: Radius.circular(isUser ? 16 : 0),
-                bottomRight: Radius.circular(isUser ? 0 : 16),
+                bottomLeft: Radius.circular(isUser ? 16 : 4),
+                bottomRight: Radius.circular(isUser ? 4 : 16),
               ),
-              border: isUser
-                  ? null
-                  : Border.all(color: Colors.grey.shade100),
+              border: isUser ? null : Border.all(color: Colors.grey.shade100),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.shade200,
@@ -278,12 +349,5 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
         );
       },
     );
-  }
-
-  void _sendMessage() {
-    if (_controller.text.trim().isNotEmpty) {
-      ref.read(chatProvider.notifier).sendMessage(_controller.text);
-      _controller.clear();
-    }
   }
 }

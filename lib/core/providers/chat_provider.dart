@@ -12,22 +12,26 @@ class ChatState {
   final List<ChatMessage> messages;
   final bool isTyping;
   final bool isOpen;
+  final String? currentStepId;
 
   const ChatState({
     this.messages = const [],
     this.isTyping = false,
     this.isOpen = false,
+    this.currentStepId,
   });
 
   ChatState copyWith({
     List<ChatMessage>? messages,
     bool? isTyping,
     bool? isOpen,
+    String? currentStepId,
   }) {
     return ChatState(
       messages: messages ?? this.messages,
       isTyping: isTyping ?? this.isTyping,
       isOpen: isOpen ?? this.isOpen,
+      currentStepId: currentStepId ?? this.currentStepId,
     );
   }
 }
@@ -40,12 +44,18 @@ class ChatNotifier extends StateNotifier<ChatState> {
   }
 
   void _initializeChat() {
+    final startStep = config.chatbot.flow.firstWhere(
+      (step) => step.id == 'start',
+      orElse: () => config.chatbot.flow.first,
+    );
+
     final welcomeMsg = ChatMessage(
       id: '1',
-      text: config.chatbot.welcomeMessage,
+      text: startStep.message,
       sender: MessageSender.bot,
     );
-    state = state.copyWith(messages: [welcomeMsg]);
+
+    state = state.copyWith(messages: [welcomeMsg], currentStepId: startStep.id);
   }
 
   void toggleChat() {
@@ -56,12 +66,11 @@ class ChatNotifier extends StateNotifier<ChatState> {
     state = state.copyWith(isOpen: false);
   }
 
-  Future<void> sendMessage(String text) async {
-    if (text.trim().isEmpty) return;
-
+  Future<void> selectOption(ChatbotFlowOption option) async {
+    // Adiciona a mensagem do usuário com a opção selecionada
     final userMsg = ChatMessage(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      text: text,
+      text: option.label,
       sender: MessageSender.user,
     );
 
@@ -70,32 +79,36 @@ class ChatNotifier extends StateNotifier<ChatState> {
       isTyping: true,
     );
 
-    await Future.delayed(const Duration(milliseconds: 1200));
+    await Future.delayed(const Duration(milliseconds: 800));
 
-    final response = _getResponse(text);
+    // Busca o próximo passo
+    final nextStep = config.chatbot.flow.firstWhere(
+      (step) => step.id == option.nextId,
+      orElse: () => config.chatbot.flow.first,
+    );
+
     final botMsg = ChatMessage(
       id: (DateTime.now().millisecondsSinceEpoch + 1).toString(),
-      text: response,
+      text: nextStep.message,
       sender: MessageSender.bot,
     );
 
     state = state.copyWith(
       messages: [...state.messages, botMsg],
       isTyping: false,
+      currentStepId: nextStep.id,
     );
   }
 
-  String _getResponse(String input) {
-    final lowerInput = input.toLowerCase();
+  ChatbotFlowStep? getCurrentStep() {
+    if (state.currentStepId == null) return null;
 
-    for (final faq in config.chatbot.faq) {
-      for (final keyword in faq.keywords) {
-        if (lowerInput.contains(keyword.toLowerCase())) {
-          return faq.answer;
-        }
-      }
+    try {
+      return config.chatbot.flow.firstWhere(
+        (step) => step.id == state.currentStepId,
+      );
+    } catch (e) {
+      return null;
     }
-
-    return 'Posso ajudar com mais alguma informação? Entre em contato pelo nosso telefone.';
   }
 }
