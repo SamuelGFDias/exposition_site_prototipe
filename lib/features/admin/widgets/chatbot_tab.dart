@@ -94,6 +94,46 @@ class _ChatbotTabState extends State<ChatbotTab> {
     _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
   }
 
+  void _moveStepUp(int index) {
+    if (index <= 0) return;
+    final newFlow = List<ChatbotFlowStep>.from(_config.chatbot.flow);
+    final temp = newFlow[index];
+    newFlow[index] = newFlow[index - 1];
+    newFlow[index - 1] = temp;
+    _updateConfig(_config.copyWith(
+      chatbot: _config.chatbot.copyWith(flow: newFlow),
+    ));
+  }
+
+  void _moveStepDown(int index) {
+    if (index >= _config.chatbot.flow.length - 1) return;
+    final newFlow = List<ChatbotFlowStep>.from(_config.chatbot.flow);
+    final temp = newFlow[index];
+    newFlow[index] = newFlow[index + 1];
+    newFlow[index + 1] = temp;
+    _updateConfig(_config.copyWith(
+      chatbot: _config.chatbot.copyWith(flow: newFlow),
+    ));
+  }
+
+  void _duplicateStep(int index) {
+    final step = _config.chatbot.flow[index];
+    final newId = 'step_${DateTime.now().millisecondsSinceEpoch}';
+    final duplicatedStep = ChatbotFlowStep(
+      id: newId,
+      message: '${step.message} (cópia)',
+      options: step.options.map((opt) => ChatbotFlowOption(
+        label: opt.label,
+        nextId: opt.nextId,
+      )).toList(),
+    );
+    final newFlow = List<ChatbotFlowStep>.from(_config.chatbot.flow);
+    newFlow.insert(index + 1, duplicatedStep);
+    _updateConfig(_config.copyWith(
+      chatbot: _config.chatbot.copyWith(flow: newFlow),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeConfig = ThemeConfig.getPreset(_config.theme);
@@ -243,11 +283,58 @@ class _ChatbotTabState extends State<ChatbotTab> {
                               ),
                             ],
                             const Spacer(),
-                            IconButton(
-                              icon: const Icon(Icons.delete_outline, size: 18),
-                              onPressed: isStart ? null : () => _removeFlowStep(index),
-                              color: Colors.grey.shade400,
-                              disabledColor: Colors.grey.shade300,
+                            // Controles de reordenação e ações
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Setas para mover
+                                IconButton(
+                                  icon: const Icon(Icons.arrow_upward, size: 16),
+                                  onPressed: index == 0 ? null : () => _moveStepUp(index),
+                                  color: themeConfig.textColor,
+                                  disabledColor: Colors.grey.shade300,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  tooltip: 'Mover para cima',
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.arrow_downward, size: 16),
+                                  onPressed: index == _config.chatbot.flow.length - 1 
+                                      ? null 
+                                      : () => _moveStepDown(index),
+                                  color: themeConfig.textColor,
+                                  disabledColor: Colors.grey.shade300,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  tooltip: 'Mover para baixo',
+                                ),
+                                const SizedBox(width: 4),
+                                Container(
+                                  width: 1,
+                                  height: 20,
+                                  color: Colors.grey.shade200,
+                                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                                ),
+                                // Duplicar
+                                IconButton(
+                                  icon: const Icon(Icons.content_copy, size: 16),
+                                  onPressed: () => _duplicateStep(index),
+                                  color: Colors.blue.shade600,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  tooltip: 'Duplicar passo',
+                                ),
+                                // Deletar
+                                IconButton(
+                                  icon: const Icon(Icons.delete_outline, size: 18),
+                                  onPressed: isStart ? null : () => _removeFlowStep(index),
+                                  color: Colors.red.shade400,
+                                  disabledColor: Colors.grey.shade300,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                                  tooltip: isStart ? 'Não pode deletar o passo inicial' : 'Deletar passo',
+                                ),
+                              ],
                             ),
                           ],
                         ),
