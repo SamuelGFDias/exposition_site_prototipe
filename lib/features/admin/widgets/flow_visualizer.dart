@@ -20,6 +20,7 @@ class FlowVisualizer extends StatefulWidget {
 
 class _FlowVisualizerState extends State<FlowVisualizer> {
   final Map<String, Offset> _positions = {};
+  final Map<String, double> _cardHeights = {};
   final double _cardWidth = 220;
   final double _cardMinHeight = 140;
   final double _horizontalSpacing = 100;
@@ -41,6 +42,12 @@ class _FlowVisualizerState extends State<FlowVisualizer> {
 
   void _calculatePositions() {
     _positions.clear();
+    _cardHeights.clear();
+    
+    // Calcular alturas dos cards
+    for (var step in widget.flow) {
+      _cardHeights[step.id] = _cardMinHeight + (step.options.length * 28.0);
+    }
     
     // Organizar em níveis (hierarquia de profundidade)
     final levels = <String, int>{};
@@ -152,6 +159,7 @@ class _FlowVisualizerState extends State<FlowVisualizer> {
           painter: _FlowPainter(
             flow: widget.flow,
             positions: _positions,
+            cardHeights: _cardHeights,
             cardWidth: _cardWidth,
             themeConfig: widget.themeConfig,
           ),
@@ -345,12 +353,14 @@ class _FlowVisualizerState extends State<FlowVisualizer> {
 class _FlowPainter extends CustomPainter {
   final List<ChatbotFlowStep> flow;
   final Map<String, Offset> positions;
+  final Map<String, double> cardHeights;
   final double cardWidth;
   final ThemeConfig themeConfig;
 
   _FlowPainter({
     required this.flow,
     required this.positions,
+    required this.cardHeights,
     required this.cardWidth,
     required this.themeConfig,
   });
@@ -362,97 +372,116 @@ class _FlowPainter extends CustomPainter {
       final fromPos = positions[step.id];
       if (fromPos == null) continue;
 
-      final cardHeight = 140 + (step.options.length * 28.0);
-      final fromCenter = Offset(
-        fromPos.dx + cardWidth / 2,
-        fromPos.dy + cardHeight,
-      );
-
+      final fromCardHeight = cardHeights[step.id] ?? 140;
+      
       for (var i = 0; i < step.options.length; i++) {
         final option = step.options[i];
         final toPos = positions[option.nextId];
         if (toPos == null) continue;
 
-        final toCenter = Offset(
-          toPos.dx + cardWidth / 2,
-          toPos.dy,
+        final toCardHeight = cardHeights[option.nextId] ?? 140;
+
+        // Ponto de saída: Centro-Direita do card de origem
+        final fromPoint = Offset(
+          fromPos.dx + cardWidth,
+          fromPos.dy + (fromCardHeight / 2),
+        );
+
+        // Ponto de chegada: Centro-Esquerda do card de destino
+        final toPoint = Offset(
+          toPos.dx,
+          toPos.dy + (toCardHeight / 2),
         );
 
         // Cor diferente para cada conexão baseada no índice
         final connectionColor = i % 3 == 0 
-            ? themeConfig.primaryColor.withValues(alpha: 0.5)
+            ? themeConfig.primaryColor.withValues(alpha: 0.6)
             : i % 3 == 1
-                ? Colors.purple.withValues(alpha: 0.5)
-                : Colors.teal.withValues(alpha: 0.5);
+                ? Colors.purple.withValues(alpha: 0.6)
+                : Colors.teal.withValues(alpha: 0.6);
         
         final connectionPaint = Paint()
           ..color = connectionColor
           ..strokeWidth = 2.5
           ..style = PaintingStyle.stroke;
 
-        // Desenhar linha curva
+        // Desenhar linha curva horizontal (curva de Bézier cúbica)
         final path = Path();
-        path.moveTo(fromCenter.dx, fromCenter.dy);
+        path.moveTo(fromPoint.dx, fromPoint.dy);
+
+        // Pontos de controle para curva horizontal suave (forma de "S" deitado)
+        final distanceX = toPoint.dx - fromPoint.dx;
+        final controlOffset = distanceX.abs() / 2;
 
         final controlPoint1 = Offset(
-          fromCenter.dx,
-          fromCenter.dy + (toCenter.dy - fromCenter.dy) / 3,
+          fromPoint.dx + controlOffset,
+          fromPoint.dy,
         );
+        
         final controlPoint2 = Offset(
-          toCenter.dx,
-          toCenter.dy - (toCenter.dy - fromCenter.dy) / 3,
+          toPoint.dx - controlOffset,
+          toPoint.dy,
         );
 
         path.cubicTo(
           controlPoint1.dx, controlPoint1.dy,
           controlPoint2.dx, controlPoint2.dy,
-          toCenter.dx, toCenter.dy,
+          toPoint.dx, toPoint.dy,
         );
 
         canvas.drawPath(path, connectionPaint);
 
-        // Desenhar seta
+        // Desenhar seta no destino (apontando para a esquerda)
         final arrowPaintColored = Paint()
           ..color = connectionColor
           ..style = PaintingStyle.fill;
-        _drawArrow(canvas, toCenter, arrowPaintColored);
+        _drawHorizontalArrow(canvas, toPoint, arrowPaintColored);
 
-        // Desenhar label da opção
-        final labelPos = Offset(
-          (fromCenter.dx + toCenter.dx) / 2 + 5,
-          (fromCenter.dy + toCenter.dy) / 2,
-        );
-        
-        _drawLabel(
+        // Desenhar label da opção com fundo
+        final labelPos = _calculateLabelPosition(fromPoint, toPoint, i, step.options.length);
+        _drawLabelWithBackground(
           canvas, 
           option.label, 
           labelPos,
-          i,
           connectionColor,
         );
       }
     }
   }
 
-  void _drawArrow(Canvas canvas, Offset tip, Paint paint) {
-    const arrowSize = 8.0;
+  // Calcular posição inteligente para o label
+  Offset _calculateLabelPosition(Offset from, Offset to, int index, int totalOptions) {
+    // Posição base: 40% do caminho (um pouco mais perto da origem)
+    final baseX = from.dx + (to.dx - from.dx) * 0.4;
+    final baseY = from.dy + (to.dy - from.dy) * 0.4;
+    
+    // Se múltiplas opções, espaçar verticalmente
+    final yOffset = (index - (totalOptions - 1) / 2) * 20;
+    
+    return Offset(baseX, baseY + yOffset);
+  }
+
+  void _drawHorizontalArrow(Canvas canvas, Offset tip, Paint paint) {
+    const arrowSize = 10.0;
     final path = Path();
+    
+    // Seta apontando para a esquerda
     path.moveTo(tip.dx, tip.dy);
-    path.lineTo(tip.dx - arrowSize / 2, tip.dy - arrowSize);
-    path.lineTo(tip.dx + arrowSize / 2, tip.dy - arrowSize);
+    path.lineTo(tip.dx - arrowSize, tip.dy - arrowSize / 2);
+    path.lineTo(tip.dx - arrowSize, tip.dy + arrowSize / 2);
     path.close();
+    
     canvas.drawPath(path, paint);
   }
 
-  void _drawLabel(Canvas canvas, String text, Offset position, int index, Color color) {
+  void _drawLabelWithBackground(Canvas canvas, String text, Offset position, Color color) {
     final textPainter = TextPainter(
       text: TextSpan(
-        text: text.length > 20 ? '${text.substring(0, 20)}...' : text,
+        text: text.length > 18 ? '${text.substring(0, 18)}...' : text,
         style: TextStyle(
           color: color,
           fontSize: 10,
           fontWeight: FontWeight.bold,
-          backgroundColor: Colors.white.withValues(alpha: 0.95),
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -460,18 +489,40 @@ class _FlowPainter extends CustomPainter {
     
     textPainter.layout();
     
-    // Offset adicional para múltiplas opções
-    final yOffset = index * 15.0;
-    
-    textPainter.paint(
-      canvas, 
-      Offset(position.dx, position.dy + yOffset),
+    // Desenhar fundo branco arredondado
+    final padding = 4.0;
+    final bgRect = RRect.fromRectAndRadius(
+      Rect.fromLTWH(
+        position.dx - padding,
+        position.dy - padding,
+        textPainter.width + padding * 2,
+        textPainter.height + padding * 2,
+      ),
+      const Radius.circular(4),
     );
+    
+    final bgPaint = Paint()
+      ..color = Colors.white.withValues(alpha: 0.95)
+      ..style = PaintingStyle.fill;
+    
+    canvas.drawRRect(bgRect, bgPaint);
+    
+    // Borda do fundo
+    final borderPaint = Paint()
+      ..color = color.withValues(alpha: 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    
+    canvas.drawRRect(bgRect, borderPaint);
+    
+    // Desenhar texto
+    textPainter.paint(canvas, position);
   }
 
   @override
   bool shouldRepaint(_FlowPainter oldDelegate) {
     return oldDelegate.flow != flow || 
-           oldDelegate.positions != positions;
+           oldDelegate.positions != positions ||
+           oldDelegate.cardHeights != cardHeights;
   }
 }
