@@ -41,6 +41,7 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
 
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
+      drawer: isMobile ? _buildMobileDrawer(themeConfig) : null,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
@@ -261,5 +262,148 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
       ),
       _ => const Center(child: Text('Tab não encontrada')),
     };
+  }
+
+  Widget _buildMobileDrawer(ThemeConfig themeConfig) {
+    return Drawer(
+      child: Container(
+        color: Colors.white,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(color: themeConfig.primaryColor),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  const Icon(Icons.dashboard, color: Colors.white, size: 32),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Painel de Controle',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Menu de Navegação',
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'PERSONALIZAÇÃO',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+            _buildMobileTabButton(
+              0,
+              Icons.palette,
+              'Geral & Tema',
+              themeConfig,
+            ),
+            const SizedBox(height: 16),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                'CONTEÚDO',
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  letterSpacing: 1,
+                ),
+              ),
+            ),
+            _buildMobileTabButton(
+              1,
+              Icons.miscellaneous_services,
+              'Serviços',
+              themeConfig,
+            ),
+            _buildMobileTabButton(
+              2,
+              Icons.contact_mail,
+              'Contato',
+              themeConfig,
+            ),
+            _buildMobileTabButton(3, Icons.chat, 'Chatbot AI', themeConfig),
+            const Divider(height: 32),
+            ListTile(
+              leading: const Icon(Icons.public, size: 20),
+              title: const Text('Ver Site'),
+              onTap: () {
+                Navigator.pop(context);
+                context.go('/');
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileTabButton(
+    int index,
+    IconData icon,
+    String label,
+    ThemeConfig themeConfig,
+  ) {
+    final isSelected = _selectedTab == index;
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      child: Material(
+        color: isSelected ? themeConfig.bgLightColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(8),
+        child: InkWell(
+          onTap: () {
+            setState(() => _selectedTab = index);
+            Navigator.pop(context);
+          },
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Row(
+              children: [
+                Icon(
+                  icon,
+                  size: 20,
+                  color: isSelected
+                      ? themeConfig.textColor
+                      : Colors.grey.shade600,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                    color: isSelected
+                        ? themeConfig.textColor
+                        : Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
