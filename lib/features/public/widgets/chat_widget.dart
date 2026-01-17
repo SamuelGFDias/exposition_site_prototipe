@@ -45,10 +45,19 @@ class _ChatWidgetState extends ConsumerState<ChatWidget> {
   }
 
   Widget _buildChatButton() {
-    return FloatingActionButton.large(
-      onPressed: () => ref.read(chatProvider.notifier).toggleChat(),
-      backgroundColor: widget.themeConfig.primaryColor,
-      child: const Icon(Icons.chat, size: 32, color: Colors.white),
+    final size = MediaQuery.of(context).size;
+    final isMobile = size.width < 768;
+    final buttonSize = isMobile ? 56.0 : 72.0;
+    final iconSize = isMobile ? 24.0 : 32.0;
+
+    return SizedBox(
+      width: buttonSize,
+      height: buttonSize,
+      child: FloatingActionButton(
+        onPressed: () => ref.read(chatProvider.notifier).toggleChat(),
+        backgroundColor: widget.themeConfig.primaryColor,
+        child: Icon(Icons.chat, size: iconSize, color: Colors.white),
+      ),
     );
   }
 
