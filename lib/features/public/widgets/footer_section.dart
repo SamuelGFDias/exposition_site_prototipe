@@ -14,6 +14,7 @@ class FooterSection extends StatelessWidget {
     final isMobile = size.width < 768;
 
     return Container(
+      width: double.infinity,
       color: Colors.black,
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 24 : 48,
