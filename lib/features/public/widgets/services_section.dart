@@ -16,9 +16,6 @@ class ServicesSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final isMobile = size.width < 768;
-    final isTablet = size.width < 1024;
-
-    final crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 4);
 
     return Container(
       color: Colors.white,
@@ -47,21 +44,26 @@ class ServicesSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 48),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 24,
-              mainAxisSpacing: 24,
-              childAspectRatio: isMobile ? 1.2 : 0.9,
-            ),
-            itemCount: services.length,
-            itemBuilder: (context, index) {
-              final service = services[index];
-              return _ServiceCard(
-                service: service,
-                themeConfig: themeConfig,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = isMobile
+                  ? constraints.maxWidth
+                  : (constraints.maxWidth < 900
+                        ? (constraints.maxWidth - 24) / 2
+                        : (constraints.maxWidth - 72) / 4);
+
+              return Wrap(
+                spacing: 24,
+                runSpacing: 24,
+                children: services.map((service) {
+                  return SizedBox(
+                    width: cardWidth,
+                    child: _ServiceCard(
+                      service: service,
+                      themeConfig: themeConfig,
+                    ),
+                  );
+                }).toList(),
               );
             },
           ),
@@ -75,10 +77,7 @@ class _ServiceCard extends StatefulWidget {
   final ServiceModel service;
   final ThemeConfig themeConfig;
 
-  const _ServiceCard({
-    required this.service,
-    required this.themeConfig,
-  });
+  const _ServiceCard({required this.service, required this.themeConfig});
 
   @override
   State<_ServiceCard> createState() => _ServiceCardState();
@@ -110,6 +109,7 @@ class _ServiceCardState extends State<_ServiceCard> {
         ),
         padding: const EdgeInsets.all(32),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AnimatedContainer(
@@ -133,9 +133,7 @@ class _ServiceCardState extends State<_ServiceCard> {
               child: Icon(
                 widget.service.icon,
                 size: 28,
-                color: _isHovered
-                    ? Colors.white
-                    : widget.themeConfig.textColor,
+                color: _isHovered ? Colors.white : widget.themeConfig.textColor,
               ),
             ),
             const SizedBox(height: 24),
@@ -145,7 +143,10 @@ class _ServiceCardState extends State<_ServiceCard> {
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey.shade900,
+                height: 1.4,
               ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 12),
             Text(
@@ -155,6 +156,8 @@ class _ServiceCardState extends State<_ServiceCard> {
                 color: Colors.grey.shade600,
                 height: 1.6,
               ),
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

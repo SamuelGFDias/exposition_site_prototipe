@@ -52,8 +52,9 @@ class _PublicSiteScreenState extends ConsumerState<PublicSiteScreen> {
     if (context != null) {
       Scrollable.ensureVisible(
         context,
-        duration: const Duration(milliseconds: 500),
+        duration: const Duration(milliseconds: 800),
         curve: Curves.easeInOut,
+        alignment: 0.0,
       );
     }
   }
@@ -66,37 +67,35 @@ class _PublicSiteScreenState extends ConsumerState<PublicSiteScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          CustomScrollView(
+          SingleChildScrollView(
             controller: _scrollController,
-            slivers: [
-              SliverList(
-                delegate: SliverChildListDelegate([
-                  HeroSection(
-                    key: heroKey,
-                    config: config.general,
-                    themeConfig: themeConfig,
-                    onContactClick: () => _scrollToSection(contactKey),
-                    onServicesClick: () => _scrollToSection(servicesKey),
-                  ),
-                  ServicesSection(
-                    key: servicesKey,
-                    services: config.services,
-                    themeConfig: themeConfig,
-                  ),
-                  AboutSection(
-                    key: aboutKey,
-                    aboutText: config.general.aboutText,
-                    themeConfig: themeConfig,
-                  ),
-                  ContactSection(
-                    key: contactKey,
-                    contact: config.contact,
-                    themeConfig: themeConfig,
-                  ),
-                  FooterSection(footerText: config.general.footerText),
-                ]),
-              ),
-            ],
+            child: Column(
+              children: [
+                HeroSection(
+                  key: heroKey,
+                  config: config.general,
+                  themeConfig: themeConfig,
+                  onContactClick: () => _scrollToSection(contactKey),
+                  onServicesClick: () => _scrollToSection(servicesKey),
+                ),
+                ServicesSection(
+                  key: servicesKey,
+                  services: config.services,
+                  themeConfig: themeConfig,
+                ),
+                AboutSection(
+                  key: aboutKey,
+                  aboutText: config.general.aboutText,
+                  themeConfig: themeConfig,
+                ),
+                ContactSection(
+                  key: contactKey,
+                  contact: config.contact,
+                  themeConfig: themeConfig,
+                ),
+                FooterSection(footerText: config.general.footerText),
+              ],
+            ),
           ),
           // Navbar fixo por cima
           Positioned(
