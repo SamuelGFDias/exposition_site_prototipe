@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/app_config.dart';
 import '../../../core/models/theme_config.dart';
-import 'flow_visualizer.dart';
+import 'chatbot/chatbot_header.dart';
+import 'chatbot/chatbot_info_banner.dart';
+import 'chatbot/chatbot_settings.dart';
+import 'chatbot/flow_step_card.dart';
+import 'flow_visualizer_modal.dart';
 
+/// Tab para configuração do Chatbot
+/// 
+/// Gerencia o fluxo de conversação do chatbot, permitindo criar e editar passos,
+/// opções e mensagens. Inclui visualização em diagrama fullscreen.
 class ChatbotTab extends StatefulWidget {
   final AppConfig initialConfig;
   final Function(AppConfig) onSave;
@@ -20,7 +28,6 @@ class ChatbotTab extends StatefulWidget {
 class _ChatbotTabState extends State<ChatbotTab> {
   late AppConfig _config;
   bool _hasChanges = false;
-  bool _showVisualizer = false;
 
   @override
   void initState() {
@@ -42,6 +49,8 @@ class _ChatbotTabState extends State<ChatbotTab> {
     });
   }
 
+  // ===== FLOW STEP OPERATIONS =====
+
   void _addFlowStep() {
     final newId = 'step_${DateTime.now().millisecondsSinceEpoch}';
     final newFlow = [
@@ -53,7 +62,7 @@ class _ChatbotTabState extends State<ChatbotTab> {
     );
   }
 
-  void _removeFlowStep(int index) {
+  void _deleteFlowStep(int index) {
     final newFlow = List<ChatbotFlowStep>.from(_config.chatbot.flow);
     newFlow.removeAt(index);
     _updateConfig(
@@ -67,29 +76,6 @@ class _ChatbotTabState extends State<ChatbotTab> {
     _updateConfig(
       _config.copyWith(chatbot: _config.chatbot.copyWith(flow: newFlow)),
     );
-  }
-
-  void _addOptionToStep(int stepIndex) {
-    final step = _config.chatbot.flow[stepIndex];
-    final newOptions = [
-      ...step.options,
-      const ChatbotFlowOption(label: 'Nova Opção', nextId: 'start'),
-    ];
-    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
-  }
-
-  void _removeOption(int stepIndex, int optIndex) {
-    final step = _config.chatbot.flow[stepIndex];
-    final newOptions = List<ChatbotFlowOption>.from(step.options);
-    newOptions.removeAt(optIndex);
-    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
-  }
-
-  void _updateOption(int stepIndex, int optIndex, ChatbotFlowOption option) {
-    final step = _config.chatbot.flow[stepIndex];
-    final newOptions = List<ChatbotFlowOption>.from(step.options);
-    newOptions[optIndex] = option;
-    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
   }
 
   void _moveStepUp(int index) {
@@ -131,6 +117,31 @@ class _ChatbotTabState extends State<ChatbotTab> {
     );
   }
 
+  // ===== OPTION OPERATIONS =====
+
+  void _addOptionToStep(int stepIndex) {
+    final step = _config.chatbot.flow[stepIndex];
+    final newOptions = [
+      ...step.options,
+      const ChatbotFlowOption(label: 'Nova Opção', nextId: 'start'),
+    ];
+    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
+  }
+
+  void _deleteOption(int stepIndex, int optIndex) {
+    final step = _config.chatbot.flow[stepIndex];
+    final newOptions = List<ChatbotFlowOption>.from(step.options);
+    newOptions.removeAt(optIndex);
+    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
+  }
+
+  void _updateOption(int stepIndex, int optIndex, ChatbotFlowOption option) {
+    final step = _config.chatbot.flow[stepIndex];
+    final newOptions = List<ChatbotFlowOption>.from(step.options);
+    newOptions[optIndex] = option;
+    _updateFlowStep(stepIndex, step.copyWith(options: newOptions));
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeConfig = ThemeConfig.getPreset(_config.theme);
@@ -138,886 +149,94 @@ class _ChatbotTabState extends State<ChatbotTab> {
 
     return Column(
       children: [
+        // ==== LISTA PRINCIPAL ====
         Expanded(
           child: ListView(
+            padding: const EdgeInsets.all(16),
             children: [
-              if (isMobile)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            'Editor de Fluxo de Conversa',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: themeConfig.textColor,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          icon: Icon(
-                            _showVisualizer ? Icons.edit : Icons.account_tree,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _showVisualizer = !_showVisualizer;
-                            });
-                          },
-                          tooltip: _showVisualizer
-                              ? 'Modo Edição'
-                              : 'Visualizar Diagrama',
-                          color: themeConfig.primaryColor,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Crie passos e conecte opções para guiar o usuário.',
-                      style: TextStyle(fontSize: 13, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 12),
-                    if (!_showVisualizer)
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _addFlowStep,
-                          icon: const Icon(Icons.add, size: 16),
-                          label: const Text('Novo Passo'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: themeConfig.primaryColor,
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      ),
-                  ],
-                )
-              else
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Editor de Fluxo de Conversa',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: themeConfig.textColor,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          const Text(
-                            'Crie passos e conecte opções para guiar o usuário.',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          _showVisualizer = !_showVisualizer;
-                        });
-                      },
-                      icon: Icon(
-                        _showVisualizer ? Icons.edit : Icons.account_tree,
-                        size: 16,
-                      ),
-                      label: Text(
-                        _showVisualizer ? 'Modo Edição' : 'Ver Diagrama',
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: themeConfig.primaryColor,
-                        side: BorderSide(color: themeConfig.primaryColor),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    if (!_showVisualizer)
-                      ElevatedButton.icon(
-                        onPressed: _addFlowStep,
-                        icon: const Icon(Icons.add, size: 16),
-                        label: const Text('Novo Passo'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: themeConfig.primaryColor,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                  ],
+              // Cabeçalho
+              ChatbotHeader(
+                themeConfig: themeConfig,
+                isMobile: isMobile,
+                onAddStep: _addFlowStep,
+                onViewDiagram: () => FlowVisualizerModal.show(
+                  context,
+                  flow: _config.chatbot.flow,
+                  themeConfig: themeConfig,
                 ),
-              const Divider(height: 32),
-              if (_showVisualizer)
-                SizedBox(
-                  height: isMobile ? 400 : 600,
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: themeConfig.primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(Icons.touch_app, 
-                                  size: 16, color: themeConfig.primaryColor),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  isMobile 
-                                      ? 'Arraste e dê zoom • Toque para editar'
-                                      : 'Arraste para navegar • Pinça para zoom • Clique para editar',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: themeConfig.textColor,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Expanded(
-                          child: FlowVisualizer(
-                            flow: _config.chatbot.flow,
-                            themeConfig: themeConfig,
-                            onStepTap: (index) {
-                              setState(() {
-                                _showVisualizer = false;
-                              });
-                              // Scroll para o passo (implementado no próximo frame)
-                              WidgetsBinding.instance.addPostFrameCallback((_) {
-                                // O scroll automático seria implementado aqui
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      'Editando passo: ${_config.chatbot.flow[index].id}',
-                                    ),
-                                    duration: const Duration(seconds: 2),
-                                  ),
-                                );
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-              else ...[
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.yellow.shade50,
-                    border: Border.all(color: Colors.yellow.shade200),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.yellow.shade700,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Dica Importante:',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.yellow.shade800,
-                                fontSize: 12,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'O fluxo sempre começa pelo passo com ID "start". Certifique-se de que ele exista. Para conectar os passos, use o ID de destino nas opções.',
-                              style: TextStyle(
-                                color: Colors.yellow.shade800,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Banner informativo
+              const ChatbotInfoBanner(),
+              
+              const SizedBox(height: 24),
+              
+              // Configurações do bot
+              ChatbotSettings(
+                config: _config,
+                onBotNameChanged: (value) => _updateConfig(
+                  _config.copyWith(
+                    chatbot: _config.chatbot.copyWith(botName: value),
                   ),
                 ),
-                const SizedBox(height: 24),
-                _buildTextField(
-                  label: 'Nome do Robô',
-                  value: _config.chatbot.botName,
-                  onChanged: (value) => _updateConfig(
-                    _config.copyWith(
-                      chatbot: _config.chatbot.copyWith(botName: value),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                ..._config.chatbot.flow.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final step = entry.value;
-                  final isStart = step.id == 'start';
+              ),
+              
+              const SizedBox(height: 32),
+              
+              // Lista de passos do fluxo
+              ..._config.chatbot.flow.asMap().entries.map((entry) {
+                final index = entry.key;
+                final step = entry.value;
+                final isStart = step.id == 'start';
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade50,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border(
-                              bottom: BorderSide(color: Colors.grey.shade100),
-                            ),
-                          ),
-                          child: isMobile
-                              ? Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 8,
-                                            vertical: 4,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: isStart
-                                                ? Colors.green.shade100
-                                                : Colors.grey.shade200,
-                                            borderRadius: BorderRadius.circular(
-                                              4,
-                                            ),
-                                          ),
-                                          child: Text(
-                                            'ID: ${step.id}',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'monospace',
-                                              color: isStart
-                                                  ? Colors.green.shade700
-                                                  : Colors.grey.shade600,
-                                            ),
-                                          ),
-                                        ),
-                                        if (isStart)
-                                          Text(
-                                            '(Início)',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.green.shade600,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_upward,
-                                            size: 18,
-                                          ),
-                                          onPressed: index == 0
-                                              ? null
-                                              : () => _moveStepUp(index),
-                                          color: themeConfig.textColor,
-                                          disabledColor: Colors.grey.shade300,
-                                          tooltip: 'Mover para cima',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_downward,
-                                            size: 18,
-                                          ),
-                                          onPressed:
-                                              index ==
-                                                  _config.chatbot.flow.length -
-                                                      1
-                                              ? null
-                                              : () => _moveStepDown(index),
-                                          color: themeConfig.textColor,
-                                          disabledColor: Colors.grey.shade300,
-                                          tooltip: 'Mover para baixo',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.content_copy,
-                                            size: 18,
-                                          ),
-                                          onPressed: () =>
-                                              _duplicateStep(index),
-                                          color: Colors.blue.shade600,
-                                          tooltip: 'Duplicar passo',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline,
-                                            size: 20,
-                                          ),
-                                          onPressed: isStart
-                                              ? null
-                                              : () => _removeFlowStep(index),
-                                          color: Colors.red.shade400,
-                                          disabledColor: Colors.grey.shade300,
-                                          tooltip: isStart
-                                              ? 'Não pode deletar o passo inicial'
-                                              : 'Deletar passo',
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                )
-                              : Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: isStart
-                                            ? Colors.green.shade100
-                                            : Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(4),
-                                      ),
-                                      child: Text(
-                                        'ID: ${step.id}',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'monospace',
-                                          color: isStart
-                                              ? Colors.green.shade700
-                                              : Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ),
-                                    if (isStart) ...[
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        '(Início)',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.green.shade600,
-                                        ),
-                                      ),
-                                    ],
-                                    const Spacer(),
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_upward,
-                                            size: 16,
-                                          ),
-                                          onPressed: index == 0
-                                              ? null
-                                              : () => _moveStepUp(index),
-                                          color: themeConfig.textColor,
-                                          disabledColor: Colors.grey.shade300,
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 32,
-                                            minHeight: 32,
-                                          ),
-                                          tooltip: 'Mover para cima',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.arrow_downward,
-                                            size: 16,
-                                          ),
-                                          onPressed:
-                                              index ==
-                                                  _config.chatbot.flow.length -
-                                                      1
-                                              ? null
-                                              : () => _moveStepDown(index),
-                                          color: themeConfig.textColor,
-                                          disabledColor: Colors.grey.shade300,
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 32,
-                                            minHeight: 32,
-                                          ),
-                                          tooltip: 'Mover para baixo',
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Container(
-                                          width: 1,
-                                          height: 20,
-                                          color: Colors.grey.shade200,
-                                          margin: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.content_copy,
-                                            size: 16,
-                                          ),
-                                          onPressed: () =>
-                                              _duplicateStep(index),
-                                          color: Colors.blue.shade600,
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 32,
-                                            minHeight: 32,
-                                          ),
-                                          tooltip: 'Duplicar passo',
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.delete_outline,
-                                            size: 18,
-                                          ),
-                                          onPressed: isStart
-                                              ? null
-                                              : () => _removeFlowStep(index),
-                                          color: Colors.red.shade400,
-                                          disabledColor: Colors.grey.shade300,
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(
-                                            minWidth: 32,
-                                            minHeight: 32,
-                                          ),
-                                          tooltip: isStart
-                                              ? 'Não pode deletar o passo inicial'
-                                              : 'Deletar passo',
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            children: [
-                              if (isMobile)
-                                Column(
-                                  children: [
-                                    _buildTextField(
-                                      label: 'ID do Passo',
-                                      value: step.id,
-                                      onChanged: (value) => _updateFlowStep(
-                                        index,
-                                        step.copyWith(id: value),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 12),
-                                    _buildTextField(
-                                      label: 'Mensagem do Bot',
-                                      value: step.message,
-                                      onChanged: (value) => _updateFlowStep(
-                                        index,
-                                        step.copyWith(message: value),
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              else
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 1,
-                                      child: _buildTextField(
-                                        label: 'ID do Passo',
-                                        value: step.id,
-                                        onChanged: (value) => _updateFlowStep(
-                                          index,
-                                          step.copyWith(id: value),
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      flex: 2,
-                                      child: _buildTextField(
-                                        label: 'Mensagem do Bot',
-                                        value: step.message,
-                                        onChanged: (value) => _updateFlowStep(
-                                          index,
-                                          step.copyWith(message: value),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Colors.grey.shade200,
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text(
-                                          'OPÇÕES DE RESPOSTA (BOTÕES)',
-                                          style: TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.grey,
-                                            letterSpacing: 1,
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () =>
-                                              _addOptionToStep(index),
-                                          child: const Text(
-                                            '+ Add Opção',
-                                            style: TextStyle(
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    if (step.options.isEmpty)
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          vertical: 8,
-                                        ),
-                                        child: Text(
-                                          'Sem opções (Fim do fluxo ou aguardando config)',
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            fontStyle: FontStyle.italic,
-                                            color: Colors.grey,
-                                          ),
-                                        ),
-                                      )
-                                    else
-                                      ...step.options.asMap().entries.map((
-                                        optEntry,
-                                      ) {
-                                        final optIndex = optEntry.key;
-                                        final option = optEntry.value;
-
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 8,
-                                          ),
-                                          child: isMobile
-                                              ? Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Icon(
-                                                          Icons
-                                                              .subdirectory_arrow_right,
-                                                          size: 14,
-                                                          color: Colors
-                                                              .grey
-                                                              .shade300,
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 8,
-                                                        ),
-                                                        Expanded(
-                                                          child: Text(
-                                                            'Opção ${optIndex + 1}',
-                                                            style: TextStyle(
-                                                              fontSize: 11,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              color: Colors
-                                                                  .grey
-                                                                  .shade600,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.close,
-                                                            size: 16,
-                                                          ),
-                                                          onPressed: () =>
-                                                              _removeOption(
-                                                                index,
-                                                                optIndex,
-                                                              ),
-                                                          color: Colors
-                                                              .grey
-                                                              .shade400,
-                                                          padding:
-                                                              EdgeInsets.zero,
-                                                          constraints:
-                                                              const BoxConstraints(),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    TextField(
-                                                      controller:
-                                                          TextEditingController(
-                                                              text:
-                                                                  option.label,
-                                                            )
-                                                            ..selection =
-                                                                TextSelection.collapsed(
-                                                                  offset: option
-                                                                      .label
-                                                                      .length,
-                                                                ),
-                                                      decoration: const InputDecoration(
-                                                        hintText:
-                                                            'Texto do Botão',
-                                                        border:
-                                                            OutlineInputBorder(),
-                                                        contentPadding:
-                                                            EdgeInsets.symmetric(
-                                                              horizontal: 8,
-                                                              vertical: 8,
-                                                            ),
-                                                        isDense: true,
-                                                      ),
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                      ),
-                                                      onChanged: (value) =>
-                                                          _updateOption(
-                                                            index,
-                                                            optIndex,
-                                                            option.copyWith(
-                                                              label: value,
-                                                            ),
-                                                          ),
-                                                    ),
-                                                    const SizedBox(height: 8),
-                                                    Row(
-                                                      children: [
-                                                        const Text(
-                                                          '→ ID: ',
-                                                          style: TextStyle(
-                                                            fontSize: 11,
-                                                            color: Colors.grey,
-                                                          ),
-                                                        ),
-                                                        Expanded(
-                                                          child: TextField(
-                                                            controller:
-                                                                TextEditingController(
-                                                                    text: option
-                                                                        .nextId,
-                                                                  )
-                                                                  ..selection = TextSelection.collapsed(
-                                                                    offset: option
-                                                                        .nextId
-                                                                        .length,
-                                                                  ),
-                                                            decoration: const InputDecoration(
-                                                              hintText:
-                                                                  'ID Destino',
-                                                              border:
-                                                                  OutlineInputBorder(),
-                                                              contentPadding:
-                                                                  EdgeInsets.symmetric(
-                                                                    horizontal:
-                                                                        8,
-                                                                    vertical: 8,
-                                                                  ),
-                                                              isDense: true,
-                                                            ),
-                                                            style:
-                                                                const TextStyle(
-                                                                  fontSize: 12,
-                                                                  fontFamily:
-                                                                      'monospace',
-                                                                ),
-                                                            onChanged: (value) =>
-                                                                _updateOption(
-                                                                  index,
-                                                                  optIndex,
-                                                                  option.copyWith(
-                                                                    nextId:
-                                                                        value,
-                                                                  ),
-                                                                ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    const Divider(height: 16),
-                                                  ],
-                                                )
-                                              : Row(
-                                                  children: [
-                                                    Icon(
-                                                      Icons
-                                                          .subdirectory_arrow_right,
-                                                      size: 14,
-                                                      color:
-                                                          Colors.grey.shade300,
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    Expanded(
-                                                      child: TextField(
-                                                        controller:
-                                                            TextEditingController(
-                                                                text: option
-                                                                    .label,
-                                                              )
-                                                              ..selection =
-                                                                  TextSelection.collapsed(
-                                                                    offset: option
-                                                                        .label
-                                                                        .length,
-                                                                  ),
-                                                        decoration: const InputDecoration(
-                                                          hintText:
-                                                              'Texto do Botão',
-                                                          border:
-                                                              OutlineInputBorder(),
-                                                          contentPadding:
-                                                              EdgeInsets.symmetric(
-                                                                horizontal: 8,
-                                                                vertical: 8,
-                                                              ),
-                                                          isDense: true,
-                                                        ),
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                        ),
-                                                        onChanged: (value) =>
-                                                            _updateOption(
-                                                              index,
-                                                              optIndex,
-                                                              option.copyWith(
-                                                                label: value,
-                                                              ),
-                                                            ),
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    const Text(
-                                                      '→',
-                                                      style: TextStyle(
-                                                        fontSize: 11,
-                                                        color: Colors.grey,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(width: 8),
-                                                    SizedBox(
-                                                      width: 120,
-                                                      child: TextField(
-                                                        controller:
-                                                            TextEditingController(
-                                                                text: option
-                                                                    .nextId,
-                                                              )
-                                                              ..selection =
-                                                                  TextSelection.collapsed(
-                                                                    offset: option
-                                                                        .nextId
-                                                                        .length,
-                                                                  ),
-                                                        decoration: const InputDecoration(
-                                                          hintText:
-                                                              'ID Destino',
-                                                          border:
-                                                              OutlineInputBorder(),
-                                                          contentPadding:
-                                                              EdgeInsets.symmetric(
-                                                                horizontal: 8,
-                                                                vertical: 8,
-                                                              ),
-                                                          isDense: true,
-                                                        ),
-                                                        style: const TextStyle(
-                                                          fontSize: 12,
-                                                          fontFamily:
-                                                              'monospace',
-                                                        ),
-                                                        onChanged: (value) =>
-                                                            _updateOption(
-                                                              index,
-                                                              optIndex,
-                                                              option.copyWith(
-                                                                nextId: value,
-                                                              ),
-                                                            ),
-                                                      ),
-                                                    ),
-                                                    IconButton(
-                                                      icon: const Icon(
-                                                        Icons.close,
-                                                        size: 14,
-                                                      ),
-                                                      onPressed: () =>
-                                                          _removeOption(
-                                                            index,
-                                                            optIndex,
-                                                          ),
-                                                      color:
-                                                          Colors.grey.shade400,
-                                                      padding: EdgeInsets.zero,
-                                                      constraints:
-                                                          const BoxConstraints(),
-                                                    ),
-                                                  ],
-                                                ),
-                                        );
-                                      }),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ],
+                return FlowStepCard(
+                  step: step,
+                  stepIndex: index,
+                  isStart: isStart,
+                  allSteps: _config.chatbot.flow,
+                  themeConfig: themeConfig,
+                  isMobile: isMobile,
+                  canMoveUp: index > 0,
+                  canMoveDown: index < _config.chatbot.flow.length - 1,
+                  onMessageChanged: (value) => _updateFlowStep(
+                    index,
+                    step.copyWith(message: value),
+                  ),
+                  onIdChanged: (value) => _updateFlowStep(
+                    index,
+                    step.copyWith(id: value),
+                  ),
+                  onAddOption: () => _addOptionToStep(index),
+                  onDeleteOption: (optIndex) => _deleteOption(index, optIndex),
+                  onOptionLabelChanged: (optIndex, value) {
+                    final option = step.options[optIndex];
+                    _updateOption(
+                      index,
+                      optIndex,
+                      ChatbotFlowOption(label: value, nextId: option.nextId),
+                    );
+                  },
+                  onOptionNextIdChanged: (optIndex, value) {
+                    final option = step.options[optIndex];
+                    _updateOption(
+                      index,
+                      optIndex,
+                      ChatbotFlowOption(label: option.label, nextId: value),
+                    );
+                  },
+                  onDelete: () => _deleteFlowStep(index),
+                  onDuplicate: () => _duplicateStep(index),
+                  onMoveUp: () => _moveStepUp(index),
+                  onMoveDown: () => _moveStepDown(index),
+                );
+              }),
             ],
           ),
         ),
+        
+        // ==== BOTÃO SALVAR ====
         const Divider(height: 1),
         Padding(
           padding: const EdgeInsets.all(16),
@@ -1036,45 +255,6 @@ class _ChatbotTabState extends State<ChatbotTab> {
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTextField({
-    required String label,
-    required String value,
-    required Function(String) onChanged,
-    int maxLines = 1,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-            letterSpacing: 1,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: TextEditingController(text: value)
-            ..selection = TextSelection.collapsed(offset: value.length),
-          onChanged: onChanged,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-            filled: true,
-            fillColor: Colors.white,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 12,
-              vertical: 12,
-            ),
-          ),
-          style: const TextStyle(fontSize: 14),
         ),
       ],
     );
