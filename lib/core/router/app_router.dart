@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:site_exposicao/core/models/theme_config.dart';
+import 'package:site_exposicao/core/providers/config_provider.dart';
 import '../providers/auth_provider.dart';
 import '../../features/public/screens/public_site_screen.dart';
 import '../../features/admin/screens/admin_login_screen.dart';
@@ -7,6 +10,10 @@ import '../../features/admin/screens/admin_panel_screen.dart';
 import '../../features/error/screens/not_found_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
+  final appConfig = ref.watch(appConfigProvider);
+  final companyName = appConfig.general.companyName;
+  final appTheme = ThemeConfig.getPreset(appConfig.theme);
+
   return GoRouter(
     initialLocation: '/',
     debugLogDiagnostics: false,
@@ -30,37 +37,38 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         name: 'home',
-        builder: (context, state) => const PublicSiteScreen(),
+        builder: (context, state) => Title(
+          title: companyName,
+          color: appTheme.primaryColor,
+          child: const PublicSiteScreen(),
+        ),
       ),
       GoRoute(
         path: '/login',
         name: 'login',
-        builder: (context, state) => const AdminLoginScreen(),
+        builder: (context, state) => Title(
+          title: 'Admin Login',
+          color: appTheme.primaryColor,
+          child: const AdminLoginScreen(),
+        ),
       ),
       GoRoute(
         path: '/admin',
         name: 'admin',
-        builder: (context, state) => const AdminPanelScreen(),
+        builder: (context, state) => Title(
+          title: 'Admin Panel',
+          color: appTheme.primaryColor,
+          child: const AdminPanelScreen(),
+        ),
         routes: [
           GoRoute(
             path: 'general',
             name: 'admin-general',
-            builder: (context, state) => const AdminPanelScreen(initialTab: 0),
-          ),
-          GoRoute(
-            path: 'services',
-            name: 'admin-services',
-            builder: (context, state) => const AdminPanelScreen(initialTab: 1),
-          ),
-          GoRoute(
-            path: 'contact',
-            name: 'admin-contact',
-            builder: (context, state) => const AdminPanelScreen(initialTab: 2),
-          ),
-          GoRoute(
-            path: 'chatbot',
-            name: 'admin-chatbot',
-            builder: (context, state) => const AdminPanelScreen(initialTab: 3),
+            builder: (context, state) => Title(
+              title: 'Admin Panel - General',
+              color: appTheme.primaryColor,
+              child: const AdminPanelScreen(initialTab: 0),
+            ),
           ),
         ],
       ),

@@ -1,0 +1,922 @@
+{
+  "meta": {
+    "project": "site_exposicao",
+    "analysis_date": "2026-01-17T11:15:02.073688",
+    "generator": "Static Dart Analyzer v0.0.1",
+    "scope": "Full Project"
+  },
+  "project_structure": [
+    {
+      "type": "directory",
+      "name": "core",
+      "path": "lib/core",
+      "children": [
+        {
+          "type": "directory",
+          "name": "models",
+          "path": "lib/core/models",
+          "children": [
+            {
+              "type": "file",
+              "name": "app_config.dart",
+              "path": "lib/core/models/app_config.dart"
+            },
+            {
+              "type": "file",
+              "name": "chat_message.dart",
+              "path": "lib/core/models/chat_message.dart"
+            },
+            {
+              "type": "file",
+              "name": "service_model.dart",
+              "path": "lib/core/models/service_model.dart"
+            },
+            {
+              "type": "file",
+              "name": "theme_config.dart",
+              "path": "lib/core/models/theme_config.dart"
+            }
+          ]
+        },
+        {
+          "type": "directory",
+          "name": "providers",
+          "path": "lib/core/providers",
+          "children": [
+            {
+              "type": "file",
+              "name": "auth_provider.dart",
+              "path": "lib/core/providers/auth_provider.dart"
+            },
+            {
+              "type": "file",
+              "name": "chat_provider.dart",
+              "path": "lib/core/providers/chat_provider.dart"
+            },
+            {
+              "type": "file",
+              "name": "config_provider.dart",
+              "path": "lib/core/providers/config_provider.dart"
+            }
+          ]
+        },
+        {
+          "type": "directory",
+          "name": "router",
+          "path": "lib/core/router",
+          "children": [
+            {
+              "type": "file",
+              "name": "app_router.dart",
+              "path": "lib/core/router/app_router.dart"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "directory",
+      "name": "features",
+      "path": "lib/features",
+      "children": [
+        {
+          "type": "directory",
+          "name": "admin",
+          "path": "lib/features/admin",
+          "children": [
+            {
+              "type": "directory",
+              "name": "screens",
+              "path": "lib/features/admin/screens",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "admin_login_screen.dart",
+                  "path": "lib/features/admin/screens/admin_login_screen.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "admin_panel_screen.dart",
+                  "path": "lib/features/admin/screens/admin_panel_screen.dart"
+                }
+              ]
+            },
+            {
+              "type": "directory",
+              "name": "widgets",
+              "path": "lib/features/admin/widgets",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "chatbot_tab.dart",
+                  "path": "lib/features/admin/widgets/chatbot_tab.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "contact_tab.dart",
+                  "path": "lib/features/admin/widgets/contact_tab.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "general_tab.dart",
+                  "path": "lib/features/admin/widgets/general_tab.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "services_tab.dart",
+                  "path": "lib/features/admin/widgets/services_tab.dart"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "directory",
+          "name": "error",
+          "path": "lib/features/error",
+          "children": [
+            {
+              "type": "directory",
+              "name": "screens",
+              "path": "lib/features/error/screens",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "not_found_screen.dart",
+                  "path": "lib/features/error/screens/not_found_screen.dart"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "directory",
+          "name": "public",
+          "path": "lib/features/public",
+          "children": [
+            {
+              "type": "directory",
+              "name": "screens",
+              "path": "lib/features/public/screens",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "public_site_screen.dart",
+                  "path": "lib/features/public/screens/public_site_screen.dart"
+                }
+              ]
+            },
+            {
+              "type": "directory",
+              "name": "widgets",
+              "path": "lib/features/public/widgets",
+              "children": [
+                {
+                  "type": "file",
+                  "name": "about_section.dart",
+                  "path": "lib/features/public/widgets/about_section.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "chat_widget.dart",
+                  "path": "lib/features/public/widgets/chat_widget.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "contact_section.dart",
+                  "path": "lib/features/public/widgets/contact_section.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "footer_section.dart",
+                  "path": "lib/features/public/widgets/footer_section.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "hero_section.dart",
+                  "path": "lib/features/public/widgets/hero_section.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "public_navbar.dart",
+                  "path": "lib/features/public/widgets/public_navbar.dart"
+                },
+                {
+                  "type": "file",
+                  "name": "services_section.dart",
+                  "path": "lib/features/public/widgets/services_section.dart"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "file",
+      "name": "main.dart",
+      "path": "lib/main.dart"
+    }
+  ],
+  "summary_kpis": {
+    "reported_files": 24,
+    "total_loc": 3723,
+    "avg_complexity": 10.458333333333334,
+    "avg_cognitive_complexity": 1.625
+  },
+  "code_health": {
+    "high_complexity_files": 1,
+    "large_files_count": 2,
+    "highly_coupled_files": 1,
+    "god_classes_count": 1,
+    "dead_code_candidates": 0,
+    "layer_violations_count": 0,
+    "circular_dependencies_count": 0,
+    "technical_debt_score": 115,
+    "health_score": 89
+  },
+  "code_smells": {
+    "god_classes": [
+      {
+        "path": "lib/features/admin/widgets/chatbot_tab.dart",
+        "reasons": [
+          "Arquivo muito grande (573 LOC)"
+        ],
+        "metrics": {
+          "loc": 573,
+          "complexity": 12,
+          "classes": 2,
+          "methods": 13
+        },
+        "suggestion": "Split into smaller, focused modules with single responsibilities"
+      }
+    ],
+    "dead_code_candidates": [],
+    "duplicate_private_members": [
+      {
+        "member_name": "_updateConfig",
+        "occurrences": 4,
+        "files": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/admin/widgets/services_tab.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "_config",
+        "occurrences": 4,
+        "files": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/admin/widgets/services_tab.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "_hasChanges",
+        "occurrences": 4,
+        "files": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/admin/widgets/services_tab.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "_handleSave",
+        "occurrences": 4,
+        "files": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/admin/widgets/services_tab.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "_buildTextField",
+        "occurrences": 3,
+        "files": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/general_tab.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "_scrollController",
+        "occurrences": 2,
+        "files": [
+          "lib/features/public/screens/public_site_screen.dart",
+          "lib/features/public/widgets/chat_widget.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "__",
+        "occurrences": 2,
+        "files": [
+          "lib/features/public/widgets/about_section.dart",
+          "lib/features/public/widgets/hero_section.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      },
+      {
+        "member_name": "___",
+        "occurrences": 2,
+        "files": [
+          "lib/features/public/widgets/about_section.dart",
+          "lib/features/public/widgets/hero_section.dart"
+        ],
+        "suggestion": "Consider extracting to shared utility or base class"
+      }
+    ],
+    "layer_violations": [],
+    "circular_dependencies": []
+  },
+  "actionable_recommendations": [
+    {
+      "priority": "HIGH",
+      "category": "Code Quality",
+      "issue": "God Classes Detected",
+      "impact": "Hard to maintain, test, and understand",
+      "affected_count": 1,
+      "effort": "High",
+      "action": "Split large classes into focused modules. Start with: lib\\features\\admin\\widgets\\chatbot_tab.dart"
+    }
+  ],
+  "hotspots_top_10": [
+    {
+      "path": "lib/core/models/app_config.dart",
+      "risk_score": 760,
+      "reason": "High coupling (8) x Complexity (95)"
+    }
+  ],
+  "files_inventory": [
+    {
+      "path": "lib/main.dart",
+      "metrics": {
+        "loc": 32,
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 1,
+        "methods": 2
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 0,
+        "used_by": []
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/models/app_config.dart",
+      "metrics": {
+        "loc": 296,
+        "complexity": 95,
+        "cognitive_complexity": 0,
+        "classes": 7,
+        "widgets": 0,
+        "methods": 0
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 8,
+        "used_by": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/admin/widgets/services_tab.dart",
+          "lib/core/providers/chat_provider.dart",
+          "lib/features/public/widgets/hero_section.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/public/widgets/contact_section.dart",
+          "lib/core/providers/config_provider.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/models/chat_message.dart",
+      "metrics": {
+        "loc": 13,
+        "complexity": 4,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 0,
+        "methods": 0
+      },
+      "dependency_graph": {
+        "imports_count": 0,
+        "used_by_count": 2,
+        "used_by": [
+          "lib/core/providers/chat_provider.dart",
+          "lib/features/public/widgets/chat_widget.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/models/service_model.dart",
+      "metrics": {
+        "loc": 26,
+        "complexity": 16,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 0,
+        "methods": 0
+      },
+      "dependency_graph": {
+        "imports_count": 0,
+        "used_by_count": 2,
+        "used_by": [
+          "lib/core/models/app_config.dart",
+          "lib/features/public/widgets/services_section.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/models/theme_config.dart",
+      "metrics": {
+        "loc": 55,
+        "complexity": 3,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 0,
+        "methods": 0
+      },
+      "dependency_graph": {
+        "imports_count": 0,
+        "used_by_count": 17,
+        "used_by": [
+          "lib/features/admin/widgets/chatbot_tab.dart",
+          "lib/features/admin/widgets/contact_tab.dart",
+          "lib/features/public/widgets/chat_widget.dart",
+          "lib/features/admin/widgets/services_tab.dart",
+          "lib/features/public/widgets/about_section.dart",
+          "lib/features/public/widgets/hero_section.dart",
+          "lib/features/public/widgets/public_navbar.dart",
+          "lib/features/admin/screens/admin_login_screen.dart",
+          "lib/features/admin/widgets/general_tab.dart",
+          "lib/features/public/screens/public_site_screen.dart",
+          "lib/features/public/widgets/contact_section.dart",
+          "lib/features/admin/screens/admin_panel_screen.dart",
+          "lib/features/error/screens/not_found_screen.dart",
+          "lib/core/models/app_config.dart",
+          "lib/core/providers/config_provider.dart",
+          "lib/core/router/app_router.dart",
+          "lib/features/public/widgets/services_section.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/providers/auth_provider.dart",
+      "metrics": {
+        "loc": 25,
+        "complexity": 3,
+        "cognitive_complexity": 2,
+        "classes": 2,
+        "widgets": 0,
+        "methods": 2
+      },
+      "dependency_graph": {
+        "imports_count": 0,
+        "used_by_count": 3,
+        "used_by": [
+          "lib/core/router/app_router.dart",
+          "lib/features/admin/screens/admin_panel_screen.dart",
+          "lib/features/admin/screens/admin_login_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/providers/chat_provider.dart",
+      "metrics": {
+        "loc": 93,
+        "complexity": 20,
+        "cognitive_complexity": 2,
+        "classes": 2,
+        "widgets": 0,
+        "methods": 3
+      },
+      "dependency_graph": {
+        "imports_count": 3,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/widgets/chat_widget.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/providers/config_provider.dart",
+      "metrics": {
+        "loc": 22,
+        "complexity": 0,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 0,
+        "methods": 4
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 7,
+        "used_by": [
+          "lib/main.dart",
+          "lib/core/providers/chat_provider.dart",
+          "lib/features/admin/screens/admin_login_screen.dart",
+          "lib/features/public/screens/public_site_screen.dart",
+          "lib/features/admin/screens/admin_panel_screen.dart",
+          "lib/features/error/screens/not_found_screen.dart",
+          "lib/core/router/app_router.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/core/router/app_router.dart",
+      "metrics": {
+        "loc": 72,
+        "complexity": 4,
+        "cognitive_complexity": 3,
+        "classes": 0,
+        "widgets": 0,
+        "methods": 0
+      },
+      "dependency_graph": {
+        "imports_count": 7,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/main.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/admin/screens/admin_login_screen.dart",
+      "metrics": {
+        "loc": 185,
+        "complexity": 7,
+        "cognitive_complexity": 3,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 3
+      },
+      "dependency_graph": {
+        "imports_count": 3,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/core/router/app_router.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/admin/screens/admin_panel_screen.dart",
+      "metrics": {
+        "loc": 254,
+        "complexity": 6,
+        "cognitive_complexity": 6,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 5
+      },
+      "dependency_graph": {
+        "imports_count": 7,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/core/router/app_router.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/admin/widgets/chatbot_tab.dart",
+      "metrics": {
+        "loc": 573,
+        "complexity": 12,
+        "cognitive_complexity": 7,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 13
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/admin/screens/admin_panel_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": true,
+        "god_class_reasons": [
+          "Arquivo muito grande (573 LOC)"
+        ]
+      }
+    },
+    {
+      "path": "lib/features/admin/widgets/contact_tab.dart",
+      "metrics": {
+        "loc": 145,
+        "complexity": 1,
+        "cognitive_complexity": 0,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 4
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/admin/screens/admin_panel_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/admin/widgets/general_tab.dart",
+      "metrics": {
+        "loc": 199,
+        "complexity": 5,
+        "cognitive_complexity": 0,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 4
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/admin/screens/admin_panel_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/admin/widgets/services_tab.dart",
+      "metrics": {
+        "loc": 144,
+        "complexity": 1,
+        "cognitive_complexity": 0,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 4
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/admin/screens/admin_panel_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/error/screens/not_found_screen.dart",
+      "metrics": {
+        "loc": 255,
+        "complexity": 11,
+        "cognitive_complexity": 2,
+        "classes": 1,
+        "widgets": 1,
+        "methods": 1
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/core/router/app_router.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/screens/public_site_screen.dart",
+      "metrics": {
+        "loc": 141,
+        "complexity": 11,
+        "cognitive_complexity": 7,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 5
+      },
+      "dependency_graph": {
+        "imports_count": 9,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/core/router/app_router.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/about_section.dart",
+      "metrics": {
+        "loc": 97,
+        "complexity": 5,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 1,
+        "methods": 3
+      },
+      "dependency_graph": {
+        "imports_count": 1,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/chat_widget.dart",
+      "metrics": {
+        "loc": 333,
+        "complexity": 15,
+        "cognitive_complexity": 5,
+        "classes": 2,
+        "widgets": 1,
+        "methods": 9
+      },
+      "dependency_graph": {
+        "imports_count": 3,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/contact_section.dart",
+      "metrics": {
+        "loc": 235,
+        "complexity": 5,
+        "cognitive_complexity": 0,
+        "classes": 2,
+        "widgets": 2,
+        "methods": 4
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/footer_section.dart",
+      "metrics": {
+        "loc": 70,
+        "complexity": 2,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 1,
+        "methods": 2
+      },
+      "dependency_graph": {
+        "imports_count": 0,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/hero_section.dart",
+      "metrics": {
+        "loc": 178,
+        "complexity": 9,
+        "cognitive_complexity": 0,
+        "classes": 1,
+        "widgets": 1,
+        "methods": 1
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/public_navbar.dart",
+      "metrics": {
+        "loc": 126,
+        "complexity": 6,
+        "cognitive_complexity": 2,
+        "classes": 3,
+        "widgets": 2,
+        "methods": 2
+      },
+      "dependency_graph": {
+        "imports_count": 1,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    },
+    {
+      "path": "lib/features/public/widgets/services_section.dart",
+      "metrics": {
+        "loc": 154,
+        "complexity": 10,
+        "cognitive_complexity": 0,
+        "classes": 3,
+        "widgets": 2,
+        "methods": 2
+      },
+      "dependency_graph": {
+        "imports_count": 2,
+        "used_by_count": 1,
+        "used_by": [
+          "lib/features/public/screens/public_site_screen.dart"
+        ]
+      },
+      "code_smells": {
+        "is_god_class": false,
+        "god_class_reasons": []
+      }
+    }
+  ]
+}

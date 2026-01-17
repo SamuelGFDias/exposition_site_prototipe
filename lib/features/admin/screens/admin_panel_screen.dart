@@ -107,7 +107,12 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
                       ),
                     ),
                   ),
-                  _buildTabButton(0, Icons.palette, 'Geral & Tema', themeConfig),
+                  _buildTabButton(
+                    0,
+                    Icons.palette,
+                    'Geral & Tema',
+                    themeConfig,
+                  ),
                   const SizedBox(height: 24),
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -121,8 +126,18 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
                       ),
                     ),
                   ),
-                  _buildTabButton(1, Icons.miscellaneous_services, 'Serviços', themeConfig),
-                  _buildTabButton(2, Icons.contact_mail, 'Contato', themeConfig),
+                  _buildTabButton(
+                    1,
+                    Icons.miscellaneous_services,
+                    'Serviços',
+                    themeConfig,
+                  ),
+                  _buildTabButton(
+                    2,
+                    Icons.contact_mail,
+                    'Contato',
+                    themeConfig,
+                  ),
                   _buildTabButton(3, Icons.chat, 'Chatbot AI', themeConfig),
                 ],
               ),
@@ -146,7 +161,12 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
     );
   }
 
-  Widget _buildTabButton(int index, IconData icon, String label, ThemeConfig themeConfig) {
+  Widget _buildTabButton(
+    int index,
+    IconData icon,
+    String label,
+    ThemeConfig themeConfig,
+  ) {
     final isSelected = _selectedTab == index;
 
     return Container(
@@ -164,15 +184,21 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
                 Icon(
                   icon,
                   size: 18,
-                  color: isSelected ? themeConfig.textColor : Colors.grey.shade600,
+                  color: isSelected
+                      ? themeConfig.textColor
+                      : Colors.grey.shade600,
                 ),
                 const SizedBox(width: 12),
                 Text(
                   label,
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                    color: isSelected ? themeConfig.textColor : Colors.grey.shade600,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
+                    color: isSelected
+                        ? themeConfig.textColor
+                        : Colors.grey.shade600,
                   ),
                 ),
               ],
@@ -186,53 +212,53 @@ class _AdminPanelScreenState extends ConsumerState<AdminPanelScreen> {
   Widget _buildTabContent() {
     return switch (_selectedTab) {
       0 => GeneralTab(
-          initialConfig: ref.read(appConfigProvider),
-          onSave: (newConfig) {
-            ref.read(appConfigProvider.notifier).updateConfig(newConfig);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Configurações gerais salvas!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-        ),
+        initialConfig: ref.read(appConfigProvider),
+        onSave: (newConfig) {
+          ref.read(appConfigProvider.notifier).updateConfig(newConfig);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Configurações gerais salvas!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      ),
       1 => ServicesTab(
-          initialConfig: ref.read(appConfigProvider),
-          onSave: (newConfig) {
-            ref.read(appConfigProvider.notifier).updateConfig(newConfig);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Serviços salvos!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-        ),
+        initialConfig: ref.read(appConfigProvider),
+        onSave: (newConfig) {
+          ref.read(appConfigProvider.notifier).updateConfig(newConfig);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Serviços salvos!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      ),
       2 => ContactTab(
-          initialConfig: ref.read(appConfigProvider),
-          onSave: (newConfig) {
-            ref.read(appConfigProvider.notifier).updateConfig(newConfig);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Informações de contato salvas!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-        ),
+        initialConfig: ref.read(appConfigProvider),
+        onSave: (newConfig) {
+          ref.read(appConfigProvider.notifier).updateConfig(newConfig);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Informações de contato salvas!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      ),
       3 => ChatbotTab(
-          initialConfig: ref.read(appConfigProvider),
-          onSave: (newConfig) {
-            ref.read(appConfigProvider.notifier).updateConfig(newConfig);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Configurações do chatbot salvas!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          },
-        ),
+        initialConfig: ref.read(appConfigProvider),
+        onSave: (newConfig) {
+          ref.read(appConfigProvider.notifier).updateConfig(newConfig);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Configurações do chatbot salvas!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        },
+      ),
       _ => const Center(child: Text('Tab não encontrada')),
     };
   }

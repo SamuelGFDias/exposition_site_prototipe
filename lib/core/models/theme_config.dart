@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum AppThemePreset {
-  blue,
-  emerald,
-  violet,
-  rose,
-  amber,
-}
+enum AppThemePreset { blue, emerald, violet, rose, amber }
 
 class ThemeConfig {
   final AppThemePreset preset;
